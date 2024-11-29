@@ -5,20 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>婚礼祝福</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            background: linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%);
-            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f8f8f8;
+            font-family: -apple-system, system-ui, sans-serif;
             min-height: 100vh;
+            padding: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
         }
 
         .container {
@@ -27,7 +23,7 @@
             background: white;
             border-radius: 16px;
             padding: 24px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .title {
@@ -35,7 +31,6 @@
             font-size: 24px;
             color: #333;
             margin-bottom: 24px;
-            font-weight: 600;
         }
 
         .photo-area {
@@ -48,23 +43,10 @@
             overflow: hidden;
             cursor: pointer;
             background: #fafafa;
-            transition: all 0.3s ease;
-        }
-
-        .photo-area:hover {
-            border-color: #FF4D4F;
-            background: #fff5f5;
         }
 
         .photo-area.has-image {
             border: none;
-        }
-
-        .preview-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: none;
         }
 
         .upload-hint {
@@ -76,21 +58,22 @@
             color: #999;
         }
 
+        .preview-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
         .blessing-input {
             width: 100%;
             height: 100px;
-            padding: 16px;
+            padding: 12px;
             border: 1px solid #e0e0e0;
-            border-radius: 12px;
+            border-radius: 8px;
             font-size: 16px;
             resize: none;
             margin-bottom: 8px;
-            transition: border-color 0.3s ease;
-        }
-
-        .blessing-input:focus {
-            outline: none;
-            border-color: #FF4D4F;
         }
 
         .word-count {
@@ -102,26 +85,19 @@
 
         .button {
             width: 100%;
-            height: 48px;
+            height: 44px;
             border: none;
-            border-radius: 24px;
+            border-radius: 22px;
             font-size: 16px;
             background: #FF4D4F;
             color: white;
             cursor: pointer;
-            transition: all 0.3s ease;
             margin-bottom: 16px;
-        }
-
-        .button:hover {
-            background: #ff6b6b;
-            transform: translateY(-1px);
         }
 
         .button:disabled {
             background: #ffcccb;
             cursor: not-allowed;
-            transform: none;
         }
 
         .tips {
@@ -137,9 +113,9 @@
             line-height: 1.6;
             color: #333;
             margin: 20px 0;
-            padding: 20px;
-            border-top: 1px solid #f0f0f0;
-            border-bottom: 1px solid #f0f0f0;
+            padding: 15px;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
         }
 
         .popup {
@@ -163,7 +139,10 @@
         
         <div class="photo-area" id="photoArea">
             <input type="file" id="photoInput" accept="image/*" style="display:none">
-            <div class="upload-hint" id="uploadHint">点击上传婚纱照片</div>
+            <div class="upload-hint" id="uploadHint">
+                <div style="font-size:32px; margin-bottom:8px;">+</div>
+                点击上传婚纱照片
+            </div>
             <img id="previewImage" class="preview-image">
         </div>
 
@@ -199,165 +178,114 @@
     <div class="popup" id="popup"></div>
 
     <script>
+        const elements = {
+            editMode: document.getElementById('editMode'),
+            viewMode: document.getElementById('viewMode'),
+            photoArea: document.getElementById('photoArea'),
+            photoInput: document.getElementById('photoInput'),
+            previewImage: document.getElementById('previewImage'),
+            uploadHint: document.getElementById('uploadHint'),
+            blessingInput: document.getElementById('blessingInput'),
+            wordCount: document.getElementById('wordCount'),
+            generateBtn: document.getElementById('generateBtn'),
+            sharedImage: document.getElementById('sharedImage'),
+            sharedText: document.getElementById('sharedText'),
+            popup: document.getElementById('popup')
+        };
+
         function showPopup(message, duration = 3000) {
-            const popup = document.getElementById('popup');
-            popup.textContent = message;
-            popup.style.display = 'block';
-            setTimeout(() => popup.style.display = 'none', duration);
+            elements.popup.textContent = message;
+            elements.popup.style.display = 'block';
+            setTimeout(() => elements.popup.style.display = 'none', duration);
         }
 
-        async function compressImage(file) {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-                        
-                        let width = img.width;
-                        let height = img.height;
-                        const maxSize = 800;
-                        
-                        if (width > height) {
-                            if (width > maxSize) {
-                                height *= maxSize / width;
-                                width = maxSize;
-                            }
-                        } else {
-                            if (height > maxSize) {
-                                width *= maxSize / height;
-                                height = maxSize;
-                            }
-                        }
-                        
-                        canvas.width = width;
-                        canvas.height = height;
-                        ctx.fillStyle = '#FFFFFF';
-                        ctx.fillRect(0, 0, width, height);
-                        ctx.drawImage(img, 0, 0, width, height);
-                        
-                        resolve(canvas.toDataURL('image/jpeg', 0.6));
-                    };
-                    img.src = e.target.result;
+        // 文件上传处理
+        elements.photoArea.onclick = () => elements.photoInput.click();
+
+        elements.photoInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            if (file.size > 5 * 1024 * 1024) {
+                showPopup('图片不能超过5MB');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                elements.previewImage.src = e.target.result;
+                elements.previewImage.style.display = 'block';
+                elements.uploadHint.style.display = 'none';
+                elements.photoArea.classList.add('has-image');
+            };
+            reader.readAsDataURL(file);
+        };
+
+        // 字数统计
+        elements.blessingInput.oninput = () => {
+            elements.wordCount.textContent = elements.blessingInput.value.length;
+        };
+
+        // 生成祝福
+        elements.generateBtn.onclick = () => {
+            if (!elements.previewImage.src) {
+                showPopup('请上传婚纱照片');
+                return;
+            }
+
+            const blessing = elements.blessingInput.value.trim();
+            if (!blessing) {
+                showPopup('请输入祝福语');
+                return;
+            }
+
+            try {
+                const data = {
+                    i: elements.previewImage.src,
+                    t: blessing
                 };
-                reader.readAsDataURL(file);
-            });
-        }
 
-        function initEditMode() {
-            const elements = {
-                photoArea: document.getElementById('photoArea'),
-                photoInput: document.getElementById('photoInput'),
-                previewImage: document.getElementById('previewImage'),
-                uploadHint: document.getElementById('uploadHint'),
-                blessingInput: document.getElementById('blessingInput'),
-                wordCount: document.getElementById('wordCount'),
-                generateBtn: document.getElementById('generateBtn')
-            };
+                const encoded = btoa(encodeURIComponent(JSON.stringify(data)))
+                    .replace(/\+/g, '-')
+                    .replace(/\//g, '_')
+                    .replace(/=/g, '');
 
-            elements.photoArea.onclick = () => elements.photoInput.click();
+                const shareUrl = `${window.location.href.split('?')[0]}?d=${encoded}`;
+                const shareText = `💝 婚礼祝福\n点击查看 > ${shareUrl}`;
 
-            elements.photoInput.onchange = async (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-                
-                if (file.size > 5 * 1024 * 1024) {
-                    showPopup('图片不能超过5MB');
-                    return;
-                }
+                const tempInput = document.createElement('textarea');
+                tempInput.value = shareText;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
 
-                elements.generateBtn.disabled = true;
-                elements.generateBtn.textContent = '处理图片中...';
-                
-                try {
-                    const compressedImage = await compressImage(file);
-                    elements.previewImage.src = compressedImage;
-                    elements.previewImage.style.display = 'block';
-                    elements.uploadHint.style.display = 'none';
-                    elements.photoArea.classList.add('has-image');
-                } catch (error) {
-                    showPopup('图片处理失败，请重试');
-                } finally {
-                    elements.generateBtn.disabled = false;
-                    elements.generateBtn.textContent = '生成祝福';
-                }
-            };
+                showPopup('祝福已生成，快去分享给好友吧！');
+            } catch (error) {
+                showPopup('生成失败，请重试');
+            }
+        };
 
-            elements.blessingInput.oninput = () => {
-                elements.wordCount.textContent = elements.blessingInput.value.length;
-            };
-
-            elements.generateBtn.onclick = async () => {
-                if (!elements.previewImage.src) {
-                    showPopup('请上传婚纱照片');
-                    return;
-                }
-
-                const blessing = elements.blessingInput.value.trim();
-                if (!blessing) {
-                    showPopup('请输入祝福语');
-                    return;
-                }
-
-                elements.generateBtn.disabled = true;
-                elements.generateBtn.textContent = '正在生成...';
-
-                try {
-                    const data = {
-                        i: elements.previewImage.src,
-                        t: blessing
-                    };
-
-                    const encoded = btoa(encodeURIComponent(JSON.stringify(data)))
-                        .replace(/\+/g, '-')
-                        .replace(/\//g, '_')
-                        .replace(/=/g, '');
-
-                    const shareUrl = `${window.location.href.split('?')[0]}?v=${encoded}`;
-                    const shareText = `💝 婚礼祝福\n点击查看 > ${shareUrl}`;
-
-                    const tempInput = document.createElement('textarea');
-                    tempInput.value = shareText;
-                    document.body.appendChild(tempInput);
-                    tempInput.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(tempInput);
-
-                    showPopup('祝福已生成，快去分享给好友吧！');
-                } catch (error) {
-                    showPopup('生成失败，请重试');
-                } finally {
-                    elements.generateBtn.disabled = false;
-                    elements.generateBtn.textContent = '生成祝福';
-                }
-            };
-        }
-
-        function initViewMode(data) {
-            document.getElementById('editMode').style.display = 'none';
-            document.getElementById('viewMode').style.display = 'block';
-            document.getElementById('sharedImage').src = data.i;
-            document.getElementById('sharedText').textContent = data.t;
-        }
-
+        // 查看模式
         window.onload = () => {
             const urlParams = new URLSearchParams(window.location.search);
-            const viewData = urlParams.get('v');
+            const data = urlParams.get('d');
 
-            if (viewData) {
+            if (data) {
                 try {
-                    const data = JSON.parse(
+                    const decoded = JSON.parse(
                         decodeURIComponent(
-                            atob(viewData.replace(/-/g, '+').replace(/_/g, '/'))
+                            atob(data.replace(/-/g, '+').replace(/_/g, '/'))
                         )
                     );
-                    initViewMode(data);
+
+                    elements.editMode.style.display = 'none';
+                    elements.viewMode.style.display = 'block';
+                    elements.sharedImage.src = decoded.i;
+                    elements.sharedText.textContent = decoded.t;
                 } catch (error) {
                     showPopup('无法加载祝福内容');
                 }
-            } else {
-                initEditMode();
             }
         };
     </script>
