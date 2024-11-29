@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="婚礼祝福">
     <title>婚礼祝福</title>
     <style>
         * {
@@ -50,6 +49,10 @@
             background: #fafafa;
         }
 
+        .photo-area:hover {
+            border-color: #ff4d4f;
+        }
+
         .preview-image {
             width: 100%;
             height: 100%;
@@ -69,11 +72,7 @@
         .upload-icon {
             font-size: 32px;
             margin-bottom: 8px;
-            color: #FF4D4F;
-        }
-
-        .input-area {
-            margin-bottom: 20px;
+            color: #ff4d4f;
         }
 
         .blessing-input {
@@ -91,29 +90,35 @@
             text-align: right;
             color: #999;
             font-size: 12px;
+            margin-bottom: 20px;
         }
 
-        .submit-btn {
+        .button {
             width: 100%;
             height: 44px;
             border: none;
             border-radius: 22px;
             font-size: 16px;
-            background: #FF4D4F;
+            background: #ff4d4f;
             color: white;
             cursor: pointer;
-            margin: 20px 0;
+            margin-bottom: 16px;
+            transition: all 0.3s;
         }
 
-        .submit-btn:disabled {
+        .button:hover {
+            background: #ff6b6b;
+        }
+
+        .button:disabled {
             background: #ffcccb;
             cursor: not-allowed;
         }
 
         .tips {
             text-align: center;
-            font-size: 14px;
             color: #666;
+            font-size: 14px;
             line-height: 1.6;
         }
 
@@ -131,13 +136,13 @@
             z-index: 100;
         }
 
-        .blessing-content {
-            margin: 20px 0;
-            padding: 20px;
+        .blessing-text {
+            font-size: 18px;
             text-align: center;
+            margin: 20px 0;
+            padding: 15px;
             border-top: 1px solid #eee;
             border-bottom: 1px solid #eee;
-            font-size: 18px;
             color: #333;
         }
     </style>
@@ -148,26 +153,25 @@
         
         <div class="photo-area" id="photoArea">
             <input type="file" id="photoInput" accept="image/*" style="display:none">
-            <div id="uploadHint" class="upload-hint">
+            <div class="upload-hint" id="uploadHint">
                 <div class="upload-icon">+</div>
-                <div>上传婚纱照片</div>
+                <div>点击上传婚纱照片</div>
             </div>
             <img id="previewImage" class="preview-image">
         </div>
 
-        <div class="input-area">
-            <textarea
-                id="blessingInput"
-                class="blessing-input"
-                placeholder="写下您的祝福（最多30字）"
-                maxlength="30"
-            ></textarea>
-            <div class="word-count">
-                <span id="wordCount">0</span>/30
-            </div>
+        <textarea 
+            class="blessing-input"
+            id="blessingInput"
+            placeholder="写下您的祝福（最多30字）"
+            maxlength="30"
+        ></textarea>
+        
+        <div class="word-count">
+            <span id="wordCount">0</span>/30
         </div>
 
-        <button id="submitBtn" class="submit-btn">生成祝福</button>
+        <button class="button" id="generateBtn">生成祝福</button>
 
         <div class="tips">
             生成后将链接发送给好友<br>
@@ -175,7 +179,7 @@
         </div>
     </div>
 
-    <div id="popup" class="popup"></div>
+    <div class="popup" id="popup"></div>
 
     <script>
         const elements = {
@@ -185,7 +189,7 @@
             uploadHint: document.getElementById('uploadHint'),
             blessingInput: document.getElementById('blessingInput'),
             wordCount: document.getElementById('wordCount'),
-            submitBtn: document.getElementById('submitBtn'),
+            generateBtn: document.getElementById('generateBtn'),
             popup: document.getElementById('popup')
         };
 
@@ -197,43 +201,22 @@
             }, duration);
         }
 
-        async function compressImage(file) {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-                        
-                        let width = img.width;
-                        let height = img.height;
-                        const maxSize = 400;
-                        
-                        if (width > height) {
-                            if (width > maxSize) {
-                                height *= maxSize / width;
-                                width = maxSize;
-                            }
-                        } else {
-                            if (height > maxSize) {
-                                width *= maxSize / height;
-                                height = maxSize;
-                            }
-                        }
-                        
-                        canvas.width = width;
-                        canvas.height = height;
-                        ctx.fillStyle = '#FFFFFF';
-                        ctx.fillRect(0, 0, width, height);
-                        ctx.drawImage(img, 0, 0, width, height);
-                        
-                        resolve(canvas.toDataURL('image/jpeg', 0.6));
-                    };
-                    img.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            });
+        async function uploadImage(file) {
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                // 使用免费图床API
+                const response = await fetch('https://api.imgbb.com/1/upload?key=YOUR_API_KEY', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                return data.data.url;
+            } catch (error) {
+                throw new Error('图片上传失败');
+            }
         }
 
         elements.photoArea.addEventListener('click', () => {
@@ -250,21 +233,26 @@
             }
 
             try {
-                const compressedImage = await compressImage(file);
-                elements.previewImage.src = compressedImage;
+                elements.generateBtn.disabled = true;
+                elements.generateBtn.textContent = '正在处理图片...';
+                
+                const imageUrl = await uploadImage(file);
+                elements.previewImage.src = imageUrl;
                 elements.previewImage.style.display = 'block';
                 elements.uploadHint.style.display = 'none';
-            } catch (err) {
+            } catch (error) {
                 showPopup('图片处理失败，请重试');
+            } finally {
+                elements.generateBtn.disabled = false;
+                elements.generateBtn.textContent = '生成祝福';
             }
         });
 
-        elements.blessingInput.addEventListener('input', (e) => {
-            const length = e.target.value.length;
-            elements.wordCount.textContent = length;
+        elements.blessingInput.addEventListener('input', () => {
+            elements.wordCount.textContent = elements.blessingInput.value.length;
         });
 
-        elements.submitBtn.addEventListener('click', async () => {
+        elements.generateBtn.addEventListener('click', async () => {
             if (!elements.previewImage.src) {
                 showPopup('请上传婚纱照片');
                 return;
@@ -276,25 +264,29 @@
                 return;
             }
 
-            elements.submitBtn.disabled = true;
-            elements.submitBtn.textContent = '正在生成...';
+            elements.generateBtn.disabled = true;
+            elements.generateBtn.textContent = '正在生成...';
 
             try {
-                const imageData = elements.previewImage.src.split(',')[1];
                 const data = {
-                    i: imageData,
+                    i: elements.previewImage.src,
                     t: blessing
                 };
 
-                const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))))
+                const encoded = btoa(JSON.stringify(data))
                     .replace(/\+/g, '-')
                     .replace(/\//g, '_')
                     .replace(/=/g, '');
 
-                const baseUrl = window.location.href.split('?')[0];
-                const shareUrl = `${baseUrl}?d=${encoded}`;
+                const shortCode = Math.random().toString(36).substring(2, 8);
+                const shareUrl = `${window.location.origin}/wedding-blessing?c=${shortCode}`;
+                
+                // 存储数据
+                localStorage.setItem(shortCode, encoded);
+
                 const shareText = `💝 收到一份新婚祝福\n点击查看: ${shareUrl}`;
 
+                // 复制到剪贴板
                 const tempInput = document.createElement('textarea');
                 tempInput.value = shareText;
                 document.body.appendChild(tempInput);
@@ -302,35 +294,39 @@
                 document.execCommand('copy');
                 document.body.removeChild(tempInput);
 
-                showPopup('祝福已生成并复制，请发送给好友！');
-            } catch (err) {
-                console.error(err);
+                showPopup('祝福已生成，请发送给好友！');
+            } catch (error) {
                 showPopup('生成失败，请重试');
             } finally {
-                elements.submitBtn.disabled = false;
-                elements.submitBtn.textContent = '生成祝福';
+                elements.generateBtn.disabled = false;
+                elements.generateBtn.textContent = '生成祝福';
             }
         });
 
         window.addEventListener('load', () => {
             const urlParams = new URLSearchParams(window.location.search);
-            const data = urlParams.get('d');
+            const code = urlParams.get('c');
             
-            if (data) {
+            if (code) {
                 try {
-                    const decoded = JSON.parse(decodeURIComponent(escape(atob(
-                        data.replace(/-/g, '+').replace(/_/g, '/')
-                    ))));
+                    const encoded = localStorage.getItem(code);
+                    if (!encoded) {
+                        showPopup('祝福内容已过期');
+                        return;
+                    }
+
+                    const data = JSON.parse(atob(
+                        encoded.replace(/-/g, '+').replace(/_/g, '/')
+                    ));
                     
-                    elements.previewImage.src = 'data:image/jpeg;base64,' + decoded.i;
+                    elements.previewImage.src = data.i;
                     elements.previewImage.style.display = 'block';
                     elements.uploadHint.style.display = 'none';
-                    elements.blessingInput.value = decoded.t;
+                    elements.blessingInput.value = data.t;
                     elements.blessingInput.disabled = true;
-                    elements.submitBtn.style.display = 'none';
+                    elements.generateBtn.style.display = 'none';
                     document.querySelector('.tips').style.display = 'none';
-                } catch (err) {
-                    console.error(err);
+                } catch (error) {
                     showPopup('无法加载祝福内容');
                 }
             }
