@@ -5,8 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>婚礼祝福</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             background: #f8f8f8;
             font-family: -apple-system, system-ui, sans-serif;
@@ -107,17 +111,6 @@
             line-height: 1.6;
         }
 
-        .blessing-text {
-            text-align: center;
-            font-size: 18px;
-            line-height: 1.6;
-            color: #333;
-            margin: 20px 0;
-            padding: 15px;
-            border-top: 1px solid #eee;
-            border-bottom: 1px solid #eee;
-        }
-
         .popup {
             position: fixed;
             top: 50%;
@@ -131,10 +124,22 @@
             display: none;
             z-index: 100;
         }
+
+        .blessing-text {
+            font-size: 18px;
+            line-height: 1.6;
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+            color: #333;
+        }
     </style>
 </head>
 <body>
-    <div class="container" id="editMode">
+    <!-- 编辑模式 -->
+    <div class="container" id="editorMode">
         <h1 class="title">婚礼祝福</h1>
         
         <div class="photo-area" id="photoArea">
@@ -165,7 +170,8 @@
         </div>
     </div>
 
-    <div class="container" id="viewMode" style="display:none">
+    <!-- 查看模式 -->
+    <div class="container" id="viewerMode" style="display:none">
         <h1 class="title">婚礼祝福</h1>
         
         <div class="photo-area has-image">
@@ -178,9 +184,17 @@
     <div class="popup" id="popup"></div>
 
     <script>
+        // GitHub配置
+        const config = {
+            owner: 'Baggio200cn', // 替换为您的GitHub用户名
+            repo: 'wedding-blessing',// 替换为您的仓库名
+            token: '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'       // 替换为您的Personal Access Token
+        };
+
+        // DOM元素
         const elements = {
-            editMode: document.getElementById('editMode'),
-            viewMode: document.getElementById('viewMode'),
+            editorMode: document.getElementById('editorMode'),
+            viewerMode: document.getElementById('viewerMode'),
             photoArea: document.getElementById('photoArea'),
             photoInput: document.getElementById('photoInput'),
             previewImage: document.getElementById('previewImage'),
@@ -193,15 +207,56 @@
             popup: document.getElementById('popup')
         };
 
+        // 显示提示消息
         function showPopup(message, duration = 3000) {
             elements.popup.textContent = message;
             elements.popup.style.display = 'block';
             setTimeout(() => elements.popup.style.display = 'none', duration);
         }
 
+        // 创建Issue存储数据
+        async function createBlessingIssue(imageData, blessing) {
+            const response = await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}/issues`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `token ${config.token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    title: `Wedding Blessing ${Date.now()}`,
+                    body: JSON.stringify({
+                        image: imageData,
+                        text: blessing
+                    }),
+                    labels: ['blessing']
+                })
+            });
+
+            if (!response.ok) throw new Error('创建失败');
+            const issue = await response.json();
+            return issue.number;
+        }
+
+        // 获取Issue数据
+        async function getBlessingData(issueNumber) {
+            const response = await fetch(
+                `https://api.github.com/repos/${config.owner}/${config.repo}/issues/${issueNumber}`,
+                {
+                    headers: {
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                }
+            );
+            
+            if (!response.ok) throw new Error('获取数据失败');
+            const issue = await response.json();
+            return JSON.parse(issue.body);
+        }
+
         // 文件上传处理
         elements.photoArea.onclick = () => elements.photoInput.click();
-
+        
         elements.photoInput.onchange = (e) => {
             const file = e.target.files[0];
             if (!file) return;
@@ -227,7 +282,7 @@
         };
 
         // 生成祝福
-        elements.generateBtn.onclick = () => {
+        elements.generateBtn.onclick = async () => {
             if (!elements.previewImage.src) {
                 showPopup('请上传婚纱照片');
                 return;
@@ -239,50 +294,42 @@
                 return;
             }
 
+            elements.generateBtn.disabled = true;
+            elements.generateBtn.textContent = '正在生成...';
+
             try {
-                const data = {
-                    i: elements.previewImage.src,
-                    t: blessing
-                };
+                const issueNumber = await createBlessingIssue(
+                    elements.previewImage.src,
+                    blessing
+                );
 
-                const encoded = btoa(encodeURIComponent(JSON.stringify(data)))
-                    .replace(/\+/g, '-')
-                    .replace(/\//g, '_')
-                    .replace(/=/g, '');
-
-                const shareUrl = `${window.location.href.split('?')[0]}?d=${encoded}`;
+                const shareUrl = `${window.location.href.split('?')[0]}?id=${issueNumber}`;
                 const shareText = `💝 婚礼祝福\n点击查看 > ${shareUrl}`;
 
-                const tempInput = document.createElement('textarea');
-                tempInput.value = shareText;
-                document.body.appendChild(tempInput);
-                tempInput.select();
-                document.execCommand('copy');
-                document.body.removeChild(tempInput);
-
+                await navigator.clipboard.writeText(shareText);
                 showPopup('祝福已生成，快去分享给好友吧！');
             } catch (error) {
+                console.error(error);
                 showPopup('生成失败，请重试');
+            } finally {
+                elements.generateBtn.disabled = false;
+                elements.generateBtn.textContent = '生成祝福';
             }
         };
 
-        // 查看模式
-        window.onload = () => {
+        // 查看祝福
+        window.onload = async () => {
             const urlParams = new URLSearchParams(window.location.search);
-            const data = urlParams.get('d');
+            const id = urlParams.get('id');
 
-            if (data) {
+            if (id) {
                 try {
-                    const decoded = JSON.parse(
-                        decodeURIComponent(
-                            atob(data.replace(/-/g, '+').replace(/_/g, '/'))
-                        )
-                    );
-
-                    elements.editMode.style.display = 'none';
-                    elements.viewMode.style.display = 'block';
-                    elements.sharedImage.src = decoded.i;
-                    elements.sharedText.textContent = decoded.t;
+                    elements.editorMode.style.display = 'none';
+                    const data = await getBlessingData(id);
+                    
+                    elements.viewerMode.style.display = 'block';
+                    elements.sharedImage.src = data.image;
+                    elements.sharedText.textContent = data.text;
                 } catch (error) {
                     showPopup('无法加载祝福内容');
                 }
