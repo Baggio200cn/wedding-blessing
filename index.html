@@ -1,340 +1,246 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>婚礼祝福</title>
+    <meta charset="utf-8">
+    <title>3D Paris Scene</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background: #f8f8f8;
-            font-family: -apple-system, system-ui, sans-serif;
-            min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 500px;
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .title {
-            text-align: center;
-            font-size: 24px;
-            color: #333;
-            margin-bottom: 24px;
-        }
-
-        .photo-area {
-            width: 100%;
-            height: 280px;
-            border: 2px dashed #e0e0e0;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-            background: #fafafa;
-        }
-
-        .photo-area.has-image {
-            border: none;
-        }
-
-        .upload-hint {
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
+        #controls {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            color: #999;
-        }
-
-        .preview-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: none;
-        }
-
-        .blessing-input {
-            width: 100%;
-            height: 100px;
-            padding: 12px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
-            resize: none;
-            margin-bottom: 8px;
-        }
-
-        .word-count {
-            text-align: right;
-            color: #999;
-            font-size: 12px;
-            margin-bottom: 20px;
-        }
-
-        .button {
-            width: 100%;
-            height: 44px;
-            border: none;
-            border-radius: 22px;
-            font-size: 16px;
-            background: #FF4D4F;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.5);
+            padding: 10px;
             color: white;
+            border-radius: 5px;
+        }
+        button {
+            margin: 5px;
+            padding: 5px 10px;
             cursor: pointer;
-            margin-bottom: 16px;
-        }
-
-        .button:disabled {
-            background: #ffcccb;
-            cursor: not-allowed;
-        }
-
-        .tips {
-            text-align: center;
-            color: #666;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        .popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.8);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-size: 14px;
-            display: none;
-            z-index: 100;
-        }
-
-        .blessing-text {
-            font-size: 18px;
-            line-height: 1.6;
-            text-align: center;
-            margin: 20px 0;
-            padding: 20px;
-            border-top: 1px solid #eee;
-            border-bottom: 1px solid #eee;
-            color: #333;
         }
     </style>
 </head>
 <body>
-    <!-- 编辑模式 -->
-    <div class="container" id="editorMode">
-        <h1 class="title">婚礼祝福</h1>
-        
-        <div class="photo-area" id="photoArea">
-            <input type="file" id="photoInput" accept="image/*" style="display:none">
-            <div class="upload-hint" id="uploadHint">
-                <div style="font-size:32px; margin-bottom:8px;">+</div>
-                点击上传婚纱照片
-            </div>
-            <img id="previewImage" class="preview-image">
-        </div>
-
-        <textarea 
-            class="blessing-input"
-            id="blessingInput"
-            placeholder="写下您的祝福（最多30字）"
-            maxlength="30"
-        ></textarea>
-        
-        <div class="word-count">
-            <span id="wordCount">0</span>/30
-        </div>
-
-        <button class="button" id="generateBtn">生成祝福</button>
-
-        <div class="tips">
-            生成后将链接发送给好友<br>
-            好友即可查看您的祝福
-        </div>
+    <div id="controls">
+        <button id="startRotation">Start Rotation</button>
+        <button id="stopRotation">Stop Rotation</button>
+        <button id="resetView">Reset View</button>
     </div>
-
-    <!-- 查看模式 -->
-    <div class="container" id="viewerMode" style="display:none">
-        <h1 class="title">婚礼祝福</h1>
-        
-        <div class="photo-area has-image">
-            <img id="sharedImage" class="preview-image" style="display:block">
-        </div>
-
-        <div class="blessing-text" id="sharedText"></div>
-    </div>
-
-    <div class="popup" id="popup"></div>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
-        // GitHub配置
-        const config = {
-            owner: 'Baggio200cn', // 替换为您的GitHub用户名
-            repo: 'wedding-blessing',// 替换为您的仓库名
-            token: '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'       // 替换为您的Personal Access Token
-        };
-
-        // DOM元素
-        const elements = {
-            editorMode: document.getElementById('editorMode'),
-            viewerMode: document.getElementById('viewerMode'),
-            photoArea: document.getElementById('photoArea'),
-            photoInput: document.getElementById('photoInput'),
-            previewImage: document.getElementById('previewImage'),
-            uploadHint: document.getElementById('uploadHint'),
-            blessingInput: document.getElementById('blessingInput'),
-            wordCount: document.getElementById('wordCount'),
-            generateBtn: document.getElementById('generateBtn'),
-            sharedImage: document.getElementById('sharedImage'),
-            sharedText: document.getElementById('sharedText'),
-            popup: document.getElementById('popup')
-        };
-
-        // 显示提示消息
-        function showPopup(message, duration = 3000) {
-            elements.popup.textContent = message;
-            elements.popup.style.display = 'block';
-            setTimeout(() => elements.popup.style.display = 'none', duration);
-        }
-
-        // 创建Issue存储数据
-        async function createBlessingIssue(imageData, blessing) {
-            const response = await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}/issues`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `token ${config.token}`,
-                    'Accept': 'application/vnd.github.v3+json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    title: `Wedding Blessing ${Date.now()}`,
-                    body: JSON.stringify({
-                        image: imageData,
-                        text: blessing
-                    }),
-                    labels: ['blessing']
-                })
-            });
-
-            if (!response.ok) throw new Error('创建失败');
-            const issue = await response.json();
-            return issue.number;
-        }
-
-        // 获取Issue数据
-        async function getBlessingData(issueNumber) {
-            const response = await fetch(
-                `https://api.github.com/repos/${config.owner}/${config.repo}/issues/${issueNumber}`,
-                {
-                    headers: {
-                        'Accept': 'application/vnd.github.v3+json'
-                    }
-                }
-            );
-            
-            if (!response.ok) throw new Error('获取数据失败');
-            const issue = await response.json();
-            return JSON.parse(issue.body);
-        }
-
-        // 文件上传处理
-        elements.photoArea.onclick = () => elements.photoInput.click();
+        // Set up the scene, camera, and renderer
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x87CEEB); // Sky blue background
         
-        elements.photoInput.onchange = (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 5, 15);
+        camera.lookAt(0, 0, 0);
+        
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+        
+        // Add lights
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+        
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(5, 10, 7);
+        scene.add(directionalLight);
+        
+        // Create ground plane (Paris)
+        const planeGeometry = new THREE.PlaneGeometry(50, 50);
+        const planeMaterial = new THREE.MeshStandardMaterial({ color: 0x999999 });
+        const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+        plane.rotation.x = -Math.PI / 2;
+        plane.position.y = -1;
+        scene.add(plane);
+        
+        // Create simple Eiffel Tower
+        function createEiffelTower() {
+            const towerGroup = new THREE.Group();
             
-            if (file.size > 5 * 1024 * 1024) {
-                showPopup('图片不能超过5MB');
-                return;
+            // Base
+            const baseGeometry = new THREE.BoxGeometry(4, 1, 4);
+            const baseMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
+            const base = new THREE.Mesh(baseGeometry, baseMaterial);
+            base.position.y = -0.5;
+            towerGroup.add(base);
+            
+            // Main structure
+            const towerGeometry = new THREE.ConeGeometry(2, 15, 4);
+            const towerMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x696969,
+                wireframe: true
+            });
+            const tower = new THREE.Mesh(towerGeometry, towerMaterial);
+            tower.position.y = 7;
+            towerGroup.add(tower);
+            
+            // Middle section
+            const middleGeometry = new THREE.CylinderGeometry(0.5, 1, 5, 4);
+            const middleMaterial = new THREE.MeshStandardMaterial({ color: 0x696969 });
+            const middle = new THREE.Mesh(middleGeometry, middleMaterial);
+            middle.position.y = 12;
+            towerGroup.add(middle);
+            
+            // Top spire
+            const spireGeometry = new THREE.ConeGeometry(0.2, 3, 8);
+            const spireMaterial = new THREE.MeshStandardMaterial({ color: 0x696969 });
+            const spire = new THREE.Mesh(spireGeometry, spireMaterial);
+            spire.position.y = 16;
+            towerGroup.add(spire);
+            
+            return towerGroup;
+        }
+        
+        const eiffelTower = createEiffelTower();
+        scene.add(eiffelTower);
+        
+        // Create character (simplified)
+        function createCharacter() {
+            const characterGroup = new THREE.Group();
+            
+            // Head
+            const headGeometry = new THREE.SphereGeometry(0.5, 16, 16);
+            const headMaterial = new THREE.MeshStandardMaterial({ color: 0xF0D0B0 });
+            const head = new THREE.Mesh(headGeometry, headMaterial);
+            head.position.y = 1.6;
+            characterGroup.add(head);
+            
+            // Cap
+            const capGeometry = new THREE.CylinderGeometry(0.6, 0.6, 0.2, 16);
+            const capMaterial = new THREE.MeshStandardMaterial({ color: 0xD2B48C });
+            const cap = new THREE.Mesh(capGeometry, capMaterial);
+            cap.position.y = 2;
+            cap.rotation.x = Math.PI * 0.1;
+            characterGroup.add(cap);
+            
+            // Body
+            const bodyGeometry = new THREE.CylinderGeometry(0.4, 0.4, 1.5, 8);
+            const bodyMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
+            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+            body.position.y = 0.75;
+            characterGroup.add(body);
+            
+            // Arms
+            const armGeometry = new THREE.BoxGeometry(0.25, 0.8, 0.25);
+            const armMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
+            
+            const leftArm = new THREE.Mesh(armGeometry, armMaterial);
+            leftArm.position.set(-0.6, 1, 0);
+            leftArm.rotation.z = -Math.PI * 0.1;
+            characterGroup.add(leftArm);
+            
+            const rightArm = new THREE.Mesh(armGeometry, armMaterial);
+            rightArm.position.set(0.6, 1, 0);
+            rightArm.rotation.z = Math.PI * 0.1;
+            characterGroup.add(rightArm);
+            
+            // Legs
+            const legGeometry = new THREE.BoxGeometry(0.3, 0.8, 0.3);
+            const legMaterial = new THREE.MeshStandardMaterial({ color: 0x444444 });
+            
+            const leftLeg = new THREE.Mesh(legGeometry, legMaterial);
+            leftLeg.position.set(-0.2, 0, 0);
+            characterGroup.add(leftLeg);
+            
+            const rightLeg = new THREE.Mesh(legGeometry, legMaterial);
+            rightLeg.position.set(0.2, 0, 0);
+            characterGroup.add(rightLeg);
+            
+            // Backpack
+            const backpackGeometry = new THREE.BoxGeometry(0.6, 0.8, 0.3);
+            const backpackMaterial = new THREE.MeshStandardMaterial({ color: 0x4682B4 });
+            const backpack = new THREE.Mesh(backpackGeometry, backpackMaterial);
+            backpack.position.set(0, 0.8, -0.3);
+            characterGroup.add(backpack);
+            
+            return characterGroup;
+        }
+        
+        const character = createCharacter();
+        character.position.set(8, 0, 0);
+        character.rotation.y = -Math.PI / 2; // Face the Eiffel Tower
+        scene.add(character);
+        
+        // Add Paris buildings (simplified)
+        function createBuilding(width, height, depth, color, x, z) {
+            const buildingGeometry = new THREE.BoxGeometry(width, height, depth);
+            const buildingMaterial = new THREE.MeshStandardMaterial({ color: color });
+            const building = new THREE.Mesh(buildingGeometry, buildingMaterial);
+            building.position.set(x, height/2, z);
+            return building;
+        }
+        
+        // Create multiple buildings
+        const buildingColors = [0xDECDB9, 0xE6E6E6, 0xD9C7B8, 0xF2F2F2];
+        
+        for (let i = 0; i < 30; i++) {
+            const size = 1 + Math.random() * 3;
+            const height = 1 + Math.random() * 5;
+            
+            // Place buildings in a circle around the Eiffel Tower
+            const angle = Math.random() * Math.PI * 2;
+            const distance = 10 + Math.random() * 15;
+            const x = Math.cos(angle) * distance;
+            const z = Math.sin(angle) * distance;
+            
+            // Don't place buildings too close to the character
+            if (Math.sqrt((x-8)*(x-8) + z*z) < 3) continue;
+            
+            const color = buildingColors[Math.floor(Math.random() * buildingColors.length)];
+            const building = createBuilding(size, height, size, color, x, z);
+            scene.add(building);
+        }
+        
+        // Camera animation controls
+        let isRotating = false;
+        let rotationSpeed = 0.005;
+        let rotationRadius = 15;
+        let angle = 0;
+        
+        document.getElementById('startRotation').addEventListener('click', function() {
+            isRotating = true;
+        });
+        
+        document.getElementById('stopRotation').addEventListener('click', function() {
+            isRotating = false;
+        });
+        
+        document.getElementById('resetView').addEventListener('click', function() {
+            angle = 0;
+            updateCameraPosition();
+        });
+        
+        function updateCameraPosition() {
+            camera.position.x = Math.cos(angle) * rotationRadius;
+            camera.position.z = Math.sin(angle) * rotationRadius;
+            camera.lookAt(0, 0, 0);
+        }
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            if (isRotating) {
+                angle += rotationSpeed;
+                updateCameraPosition();
             }
-
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                elements.previewImage.src = e.target.result;
-                elements.previewImage.style.display = 'block';
-                elements.uploadHint.style.display = 'none';
-                elements.photoArea.classList.add('has-image');
-            };
-            reader.readAsDataURL(file);
-        };
-
-        // 字数统计
-        elements.blessingInput.oninput = () => {
-            elements.wordCount.textContent = elements.blessingInput.value.length;
-        };
-
-        // 生成祝福
-        elements.generateBtn.onclick = async () => {
-            if (!elements.previewImage.src) {
-                showPopup('请上传婚纱照片');
-                return;
-            }
-
-            const blessing = elements.blessingInput.value.trim();
-            if (!blessing) {
-                showPopup('请输入祝福语');
-                return;
-            }
-
-            elements.generateBtn.disabled = true;
-            elements.generateBtn.textContent = '正在生成...';
-
-            try {
-                const issueNumber = await createBlessingIssue(
-                    elements.previewImage.src,
-                    blessing
-                );
-
-                const shareUrl = `${window.location.href.split('?')[0]}?id=${issueNumber}`;
-                const shareText = `💝 婚礼祝福\n点击查看 > ${shareUrl}`;
-
-                await navigator.clipboard.writeText(shareText);
-                showPopup('祝福已生成，快去分享给好友吧！');
-            } catch (error) {
-                console.error(error);
-                showPopup('生成失败，请重试');
-            } finally {
-                elements.generateBtn.disabled = false;
-                elements.generateBtn.textContent = '生成祝福';
-            }
-        };
-
-        // 查看祝福
-        window.onload = async () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const id = urlParams.get('id');
-
-            if (id) {
-                try {
-                    elements.editorMode.style.display = 'none';
-                    const data = await getBlessingData(id);
-                    
-                    elements.viewerMode.style.display = 'block';
-                    elements.sharedImage.src = data.image;
-                    elements.sharedText.textContent = data.text;
-                } catch (error) {
-                    showPopup('无法加载祝福内容');
-                }
-            }
-        };
+            
+            renderer.render(scene, camera);
+        }
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        animate();
     </script>
 </body>
 </html>
