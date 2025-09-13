@@ -1,0 +1,9 @@
+# Stacking Ensemble Model Code
+from sklearn.ensemble import StackingClassifier
+from sklearn.linear_model import LogisticRegression
+
+def build_stacking_model(base_models, train_data, train_labels):
+    estimators = [(name, model) for name, model in base_models.items()]
+    stacking_model = StackingClassifier(estimators=estimators, final_estimator=LogisticRegression())
+    stacking_model.fit(train_data, train_labels)
+    return stacking_model
