@@ -1,0 +1,5 @@
+# 示例处理后的数据文件
+Date,Number1,Number2,Number3,Number4,Number5,Bonus1,Bonus2,NormalizedNumber1,NormalizedNumber2,NormalizedNumber3,NormalizedNumber4,NormalizedNumber5
+2025-09-01,1,12,23,34,45,6,7,0.02,0.24,0.46,0.68,0.90
+2025-09-02,2,13,24,35,46,7,8,0.04,0.26,0.48,0.70,0.92
+2025-09-03,3,14,25,36,47,8,9,0.06,0.28,0.50,0.72,0.94
