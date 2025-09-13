@@ -1,0 +1,15 @@
+# Markdown Generator Utility
+def generate_markdown(title, analysis, reasoning, prediction):
+    markdown = f"""
+## {title}
+
+### 上期中奖分析回顾
+{analysis}
+
+### 新的一期推理过程展示
+{reasoning}
+
+### 新的一期结果预测
+{prediction}
+"""
+    return markdown
