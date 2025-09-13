@@ -1,0 +1,7 @@
+# Random Forest Model Code
+from sklearn.ensemble import RandomForestClassifier
+
+def train_rf_model(train_data, train_labels):
+    model = RandomForestClassifier(n_estimators=100, random_state=42)
+    model.fit(train_data, train_labels)
+    return model
