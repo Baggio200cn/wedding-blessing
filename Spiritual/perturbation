@@ -1,0 +1,7 @@
+# Spiritual Image Perturbation Module
+import random
+
+def apply_perturbation(predictions, image_input):
+    perturbation_factor = random.uniform(0.9, 1.1)
+    adjusted_predictions = [p * perturbation_factor for p in predictions]
+    return adjusted_predictions
