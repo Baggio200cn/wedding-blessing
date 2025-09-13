@@ -1,0 +1,7 @@
+# XGBoost Model Code
+import xgboost as xgb
+
+def train_xgboost_model(train_data, train_labels):
+    model = xgb.XGBClassifier(objective='binary:logistic', eval_metric='logloss')
+    model.fit(train_data, train_labels)
+    return model
