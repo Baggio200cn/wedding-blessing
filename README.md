@@ -32,7 +32,6 @@ project/
 │   ├── test_models.py          # 各模型测试代码
 ├── main.py                     # 主程序入口
 ├── README.md                   # 项目说明文档
-├── index.html                  # 项目网页展示
 ```
 
 ## 技术栈
