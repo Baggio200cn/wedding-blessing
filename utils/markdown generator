@@ -1,34 +1,25 @@
-def generate_markdown(title, analysis_table, analysis_chart_path, prediction_results):
+import markdown
+import os
+
+def convert_markdown_to_html(md_file, output_dir):
     """
-    生成中文Markdown文件
-    :param title: 标题
-    :param analysis_table: 数据分析表格
-    :param analysis_chart_path: 分析图路径
-    :param prediction_results: 预测结果
-    :return: Markdown字符串
+    将Markdown文件转换为HTML文件
+    :param md_file: Markdown文件路径
+    :param output_dir: 输出HTML文件目录
     """
-    markdown = f"""
-## {title}
+    try:
+        with open(md_file, 'r', encoding='utf-8') as f:
+            md_content = f.read()
+            html_content = markdown.markdown(md_content)
 
-### 数据分析过程
-以下是数据分析表格：
-{analysis_table}
+        # 输出HTML文件
+        html_file = os.path.join(output_dir, os.path.basename(md_file).replace('.md', '.html'))
+        with open(html_file, 'w', encoding='utf-8') as f:
+            f.write(html_content)
+        print(f"HTML文件已生成: {html_file}")
+    except Exception as e:
+        print(f"转换失败: {e}")
 
-分析图表如下：
-![分析图表]({analysis_chart_path})
-
-### 预测结果展示
-前区预测号码：{prediction_results['front']}
-后区预测号码：{prediction_results['back']}
-"""
-    return markdown
-
+# 示例调用
 if __name__ == "__main__":
-    # 示例调用
-    prediction_results = {"front": [1, 12, 23, 34, 45], "back": [6, 7]}
-    analysis_table = "<table><tr><td>示例表格</td></tr></table>"
-    analysis_chart_path = "charts/analysis_chart.png"
-    markdown_content = generate_markdown("LSTM 模块分析", analysis_table, analysis_chart_path, prediction_results)
-    with open("module_lstm.md", "w", encoding="utf-8") as f:
-        f.write(markdown_content)
-    print("Markdown 文件已生成")
+    convert_markdown_to_html("module_stacking.md", "html/")
