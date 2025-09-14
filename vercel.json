@@ -2,7 +2,9 @@
   "version": 2,
   "functions": {
     "api/handler.py": {
-      "runtime": "python3.9"
+      "runtime": "python3.9",
+      "maxDuration": 10,
+      "memory": 512
     }
   },
   "routes": [
@@ -10,5 +12,10 @@
       "src": "/api/anthropic",
       "dest": "/api/handler.py"
     }
-  ]
+  ],
+  "build": {
+    "env": {
+      "ANTHROPIC_API_KEY": "your-api-key-here"
+    }
+  }
 }
