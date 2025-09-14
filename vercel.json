@@ -10,12 +10,12 @@
   "routes": [
     {
       "src": "/api/anthropic",
-      "dest": "/api/handler.py"
+      "dest": "api/handler.py"
     }
   ],
   "build": {
     "env": {
-      "ANTHROPIC_API_KEY": "your-api-key-here"
+      "ANTHROPIC_API_KEY": "replace-with-your-valid-api-key"
     }
   },
   "framework": "none"
