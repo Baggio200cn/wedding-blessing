@@ -12,6 +12,5 @@
       "src": "/api/anthropic",
       "dest": "api/handler.py"
     }
-  ],
-  "framework": "none"
+  }
 }
