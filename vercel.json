@@ -13,10 +13,5 @@
       "dest": "api/handler.py"
     }
   ],
-  "build": {
-    "env": {
-      "ANTHROPIC_API_KEY": "replace-with-your-valid-api-key"
-    }
-  },
   "framework": "none"
 }
