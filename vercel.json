@@ -3,11 +3,7 @@
   "builds": [
     {
       "src": "api/*.py",
-      "use": "@vercel/python"
-    },
-    {
-      "src": "public/**",
-      "use": "@vercel/static"
+      "use": "@vercel/python@3.9.0"
     }
   ],
   "routes": [
@@ -37,14 +33,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/public/$1"
+      "dest": "/public/index.html"
     }
-  ],
-  "functions": {
-    "api/*.py": {
-      "runtime": "python3.9",
-      "maxDuration": 30,
-      "memory": 1024
-    }
-  }
+  ]
 }
