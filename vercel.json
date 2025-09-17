@@ -1,4 +1,4 @@
-﻿{
+{
   "version": 2,
   "builds": [
     {
@@ -12,16 +12,16 @@
   ],
   "routes": [
     {
+      "src": "/api/health",
+      "dest": "/api/health.py"
+    },
+    {
       "src": "/api/predict",
       "dest": "/api/predict.py"
     },
     {
       "src": "/api/data-analysis",
       "dest": "/api/data_analysis.py"
-    },
-    {
-      "src": "/api/train-model",
-      "dest": "/api/model_train.py"
     },
     {
       "src": "/api/spiritual",
@@ -32,12 +32,12 @@
       "dest": "/api/generate_tweet.py"
     },
     {
-      "src": "/api/health",
-      "dest": "/api/health.py"
+      "src": "/api/train-model",
+      "dest": "/api/model_train.py"
     },
     {
       "src": "/(.*)",
-      "dest": "/public/"
+      "dest": "/public/$1"
     }
   ],
   "functions": {
@@ -46,8 +46,5 @@
       "maxDuration": 30,
       "memory": 1024
     }
-  },
-  "env": {
-    "PYTHONPATH": "/var/task"
   }
 }
