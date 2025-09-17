@@ -1,39 +1,22 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/*.py",
-      "use": "@vercel/python@3.9.0"
+  "functions": {
+    "api/health.py": {
+      "runtime": "python3.9"
+    },
+    "api/predict.py": {
+      "runtime": "python3.9"
+    },
+    "api/data_analysis.py": {
+      "runtime": "python3.9"
+    },
+    "api/spiritual_perturbation.py": {
+      "runtime": "python3.9"
+    },
+    "api/generate_tweet.py": {
+      "runtime": "python3.9"
+    },
+    "api/model_train.py": {
+      "runtime": "python3.9"
     }
-  ],
-  "routes": [
-    {
-      "src": "/api/health",
-      "dest": "/api/health.py"
-    },
-    {
-      "src": "/api/predict",
-      "dest": "/api/predict.py"
-    },
-    {
-      "src": "/api/data-analysis",
-      "dest": "/api/data_analysis.py"
-    },
-    {
-      "src": "/api/spiritual",
-      "dest": "/api/spiritual_perturbation.py"
-    },
-    {
-      "src": "/api/generate-tweet",
-      "dest": "/api/generate_tweet.py"
-    },
-    {
-      "src": "/api/train-model",
-      "dest": "/api/model_train.py"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/public/index.html"
-    }
-  ]
+  }
 }
