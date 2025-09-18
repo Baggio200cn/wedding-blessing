@@ -1,67 +1,67 @@
-﻿<!DOCTYPE html>
-<html lang=\"zh-CN\">
+﻿# 创建修复后的index.html
+@"
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
-    <meta charset=\"UTF-8\">
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>大乐透智能预测系统</title>
-    <link rel=\"stylesheet\" href=\"/static/css/styles.css\">
+    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="icon" href="./favicon.ico" type="image/x-icon">
 </head>
 <body>
-    <div class=\"container\">
-        <div class=\"header\">
+    <div class="container">
+        <div class="header">
             <h1>大乐透智能预测系统</h1>
             <p>基于深度学习 + 灵修直觉的多模型集成预测平台</p>
         </div>
 
-        <div class=\"api-status\" id=\"api-status\">
-            <span class=\"status-indicator status-warning\"></span>
+        <div class="api-status" id="api-status">
+            <span class="status-indicator status-warning"></span>
             <span>正在检查系统状态...</span>
         </div>
 
-        <div class=\"dashboard\">
-            <!-- 数据分析模块 -->
-            <div class=\"card\">
+        <div class="dashboard">
+            <div class="card">
                 <h2>数据分析</h2>
-                <p style=\"margin-bottom: 15px; color: #666;\">分析历史开奖数据，发现号码规律</p>
-                <button class=\"btn\" onclick=\"analyzeData()\">执行数据分析</button>
-                <div class=\"loading\" id=\"analysis-loading\">正在分析数据...</div>
-                <div class=\"result-area\" id=\"analysis-result\"></div>
+                <p style="margin-bottom: 15px; color: #666;">分析历史开奖数据，发现号码规律</p>
+                <button class="btn" onclick="analyzeData()">执行数据分析</button>
+                <div class="loading" id="analysis-loading">正在分析数据...</div>
+                <div class="result-area" id="analysis-result"></div>
             </div>
 
-            <!-- AI预测模块 -->
-            <div class=\"card\">
+            <div class="card">
                 <h2>AI智能预测</h2>
-                <p style=\"margin-bottom: 15px; color: #666;\">多模型集成预测下期中奖号码</p>
-                <button class=\"btn\" onclick=\"predict()\">生成AI预测</button>
-                <div class=\"loading\" id=\"prediction-loading\">AI正在思考...</div>
-                <div class=\"result-area\" id=\"prediction-result\"></div>
+                <p style="margin-bottom: 15px; color: #666;">多模型集成预测下期中奖号码</p>
+                <button class="btn" onclick="predict()">生成AI预测</button>
+                <div class="loading" id="prediction-loading">AI正在思考...</div>
+                <div class="result-area" id="prediction-result"></div>
             </div>
 
-            <!-- 灵修扰动模块 -->
-            <div class=\"card\">
+            <div class="card">
                 <h2>灵修扰动</h2>
-                <p style=\"margin-bottom: 15px; color: #666;\">融入灵修直觉，调整预测权重</p>
-                <button class=\"btn\" onclick=\"getSpiritualPerturbation()\">获取灵修因子</button>
-                <div class=\"loading\" id=\"spiritual-loading\">感应宇宙能量...</div>
-                <div class=\"result-area\" id=\"spiritual-result\"></div>
+                <p style="margin-bottom: 15px; color: #666;">融入灵修直觉，调整预测权重</p>
+                <button class="btn" onclick="getSpiritualPerturbation()">获取灵修因子</button>
+                <div class="loading" id="spiritual-loading">感应宇宙能量...</div>
+                <div class="result-area" id="spiritual-result"></div>
             </div>
 
-            <!-- 系统监控模块 -->
-            <div class=\"card\">
+            <div class="card">
                 <h2>系统监控</h2>
-                <p style=\"margin-bottom: 15px; color: #666;\">实时监控系统运行状态</p>
-                <button class=\"btn\" onclick=\"getSystemHealth()\">健康检查</button>
-                <div class=\"loading\" id=\"monitor-loading\">正在检查系统...</div>
-                <div class=\"result-area\" id=\"monitor-result\"></div>
+                <p style="margin-bottom: 15px; color: #666;">实时监控系统运行状态</p>
+                <button class="btn" onclick="getSystemHealth()">健康检查</button>
+                <div class="loading" id="monitor-loading">正在检查系统...</div>
+                <div class="result-area" id="monitor-result"></div>
             </div>
         </div>
 
-        <div style=\"text-align: center; color: white; margin-top: 30px; opacity: 0.8;\">
+        <div style="text-align: center; color: white; margin-top: 30px; opacity: 0.8;">
             <p>本系统仅供娱乐和技术研究，请理性购彩</p>
-            <p style=\"margin-top: 10px;\">© 2024 AI-Powered Lottery Prediction System</p>
+            <p style="margin-top: 10px;">© 2024 AI-Powered Lottery Prediction System</p>
         </div>
     </div>
 
-    <script src=\"/static/js/app.js\"></script>
+    <script src="./js/app.js"></script>
 </body>
 </html>
+"@ | Out-File -FilePath "public/index.html" -Encoding UTF8
