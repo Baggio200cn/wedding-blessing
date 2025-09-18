@@ -1,51 +1,23 @@
 ﻿{
-    "functions":  {
-                      "api/**/*.py":  {
-                                          "maxDuration":  30,
-                                          "runtime":  "python3.9"
-                                      }
-                  },
-    "builds":  [
-                   {
-                       "src":  "public/**",
-                       "use":  "@vercel/static"
-                   },
-                   {
-                       "config":  {
-                                      "maxLambdaSize":  "50mb"
-                                  },
-                       "use":  "@vercel/python",
-                       "src":  "api/**/*.py"
-                   }
-               ],
-    "headers":  [
-                    {
-                        "headers":  [
-                                        {
-                                            "key":  "Access-Control-Allow-Origin",
-                                            "value":  "*"
-                                        },
-                                        {
-                                            "key":  "Access-Control-Allow-Methods",
-                                            "value":  "GET, POST, PUT, DELETE, OPTIONS"
-                                        },
-                                        {
-                                            "key":  "Access-Control-Allow-Headers",
-                                            "value":  "Content-Type, Authorization"
-                                        }
-                                    ],
-                        "source":  "/api/(.*)"
-                    }
-                ],
-    "routes":  [
-                   {
-                       "src":  "/api/(.*)",
-                       "dest":  "/api/$1"
-                   },
-                   {
-                       "src":  "/(.*)",
-                       "dest":  "/public/$1"
-                   }
-               ],
-    "version":  2
+  "version": 2,
+  "builds": [
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "api/**/*.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/public/$1"
+    }
+  ]
 }
