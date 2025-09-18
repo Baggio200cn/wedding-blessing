@@ -1,67 +1,558 @@
-﻿# 创建修复后的index.html
-@"
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>大乐透智能预测系统</title>
-    <link rel="stylesheet" href="./css/styles.css">
-    <link rel="icon" href="./favicon.ico" type="image/x-icon">
+    <title>基于深度学习 + 灵修直觉的多模态集成预测平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .status-bar {
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            background: #8bc34a;
+            border-radius: 50%;
+            margin-right: 10px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card h3 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+        
+        .button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .results-display {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .analysis-results {
+            margin-top: 15px;
+        }
+        
+        .analysis-item {
+            background: #e8f4fd;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border-left: 3px solid #4299e1;
+        }
+        
+        .spiritual-factor {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            color: #2d3748;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            color: #666;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .latest-results {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .winning-numbers {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .number-ball {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 5px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .front-number {
+            background: #ff6b6b;
+            color: white;
+        }
+        
+        .back-number {
+            background: #4ecdc4;
+            color: white;
+        }
+        
+        .prize-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .prize-item {
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .report-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .markdown-content {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .error {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .success {
+            background: #c6f6d5;
+            color: #22543d;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>大乐透智能预测系统</h1>
-            <p>基于深度学习 + 灵修直觉的多模型集成预测平台</p>
+            <h1>基于深度学习 + 灵修直觉的多模态集成预测平台</h1>
+            <p>AI智能预测 + 宇宙能量感应 = 更准确的预测结果</p>
         </div>
 
-        <div class="api-status" id="api-status">
-            <span class="status-indicator status-warning"></span>
-            <span>正在检查系统状态...</span>
+        <div class="status-bar">
+            <div class="status-indicator"></div>
+            系统运行正常
+        </div>
+
+        <!-- 最新开奖结果展示 -->
+        <div class="latest-results" id="latestResults">
+            <h3 style="text-align: center; margin-bottom: 15px;">🏆 最新开奖结果</h3>
+            <div id="latestResultsContent">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    正在获取最新开奖信息...
+                </div>
+            </div>
         </div>
 
         <div class="dashboard">
             <div class="card">
-                <h2>数据分析</h2>
-                <p style="margin-bottom: 15px; color: #666;">分析历史开奖数据，发现号码规律</p>
-                <button class="btn" onclick="analyzeData()">执行数据分析</button>
-                <div class="loading" id="analysis-loading">正在分析数据...</div>
-                <div class="result-area" id="analysis-result"></div>
+                <h3>📊 数据分析</h3>
+                <p>分析历史开奖数据，发现规律性</p>
+                <button class="button" onclick="performDataAnalysis()">执行数据分析</button>
+                <div class="results-display" id="analysisResults" style="display: none;">
+                    <div class="loading" id="analysisLoading">
+                        <div class="spinner"></div>
+                        正在分析数据...
+                    </div>
+                    <div id="analysisContent"></div>
+                </div>
             </div>
 
             <div class="card">
-                <h2>AI智能预测</h2>
-                <p style="margin-bottom: 15px; color: #666;">多模型集成预测下期中奖号码</p>
-                <button class="btn" onclick="predict()">生成AI预测</button>
-                <div class="loading" id="prediction-loading">AI正在思考...</div>
-                <div class="result-area" id="prediction-result"></div>
+                <h3>🤖 AI智能预测</h3>
+                <p>多模型集成下期号码预测</p>
+                <button class="button" onclick="generateAIPrediction()">生成AI预测</button>
+                <div class="results-display" id="predictionResults" style="display: none;">
+                    <div class="loading" id="predictionLoading">
+                        <div class="spinner"></div>
+                        AI模型正在计算...
+                    </div>
+                    <div id="predictionContent"></div>
+                </div>
             </div>
 
             <div class="card">
-                <h2>灵修扰动</h2>
-                <p style="margin-bottom: 15px; color: #666;">融入灵修直觉，调整预测权重</p>
-                <button class="btn" onclick="getSpiritualPerturbation()">获取灵修因子</button>
-                <div class="loading" id="spiritual-loading">感应宇宙能量...</div>
-                <div class="result-area" id="spiritual-result"></div>
+                <h3>🧘 灵修优化</h3>
+                <p>融入灵修觉醒，调谐预测直觉</p>
+                <button class="button" onclick="getSpiritualFactor()">获取灵修因子</button>
+                <div class="results-display" id="spiritualResults" style="display: none;">
+                    <div class="loading" id="spiritualLoading">
+                        <div class="spinner"></div>
+                        正在感应宇宙能量...
+                    </div>
+                    <div id="spiritualContent"></div>
+                </div>
             </div>
 
             <div class="card">
-                <h2>系统监控</h2>
-                <p style="margin-bottom: 15px; color: #666;">实时监控系统运行状态</p>
-                <button class="btn" onclick="getSystemHealth()">健康检查</button>
-                <div class="loading" id="monitor-loading">正在检查系统...</div>
-                <div class="result-area" id="monitor-result"></div>
+                <h3>🔍 系统监控</h3>
+                <p>实时监控系统运行状态</p>
+                <button class="button" onclick="performHealthCheck()">健康检查</button>
+                <div class="results-display" id="healthResults" style="display: none;">
+                    <div class="loading" id="healthLoading">
+                        <div class="spinner"></div>
+                        正在检查系统状态...
+                    </div>
+                    <div id="healthContent"></div>
+                </div>
             </div>
         </div>
 
-        <div style="text-align: center; color: white; margin-top: 30px; opacity: 0.8;">
-            <p>本系统仅供娱乐和技术研究，请理性购彩</p>
-            <p style="margin-top: 10px;">© 2024 AI-Powered Lottery Prediction System</p>
+        <!-- 报告生成区域 -->
+        <div class="report-section">
+            <h3>📝 分析报告生成</h3>
+            <p>生成适合公众号发表的详细分析报告</p>
+            <div style="margin: 15px 0;">
+                <input type="text" id="currentPeriod" placeholder="当前期数 (如: 24001)" style="padding: 8px; margin-right: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                <input type="text" id="lastPeriod" placeholder="上期期数 (如: 23365)" style="padding: 8px; margin-right: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                <button class="button" onclick="generateReport()">生成分析报告</button>
+            </div>
+            <div class="results-display" id="reportResults" style="display: none;">
+                <div class="loading" id="reportLoading">
+                    <div class="spinner"></div>
+                    正在生成报告...
+                </div>
+                <div id="reportContent">
+                    <div class="markdown-content" id="markdownContent"></div>
+                    <button class="button" onclick="copyReport()" style="margin-top: 10px;">复制报告内容</button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <script src="./js/app.js"></script>
+    <script>
+        // API基础配置
+        const API_BASE = '';
+        
+        // 页面加载时获取最新开奖结果
+        document.addEventListener('DOMContentLoaded', function() {
+            loadLatestResults();
+        });
+
+        // 获取最新开奖结果
+        async function loadLatestResults() {
+            try {
+                const loadingElement = document.querySelector('#latestResults .loading');
+                loadingElement.style.display = 'block';
+                
+                const response = await fetch(API_BASE + '/api/latest-results');
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    displayLatestResults(data.latest_results);
+                } else {
+                    throw new Error(data.message || '获取数据失败');
+                }
+            } catch (error) {
+                document.getElementById('latestResultsContent').innerHTML = '<div class="error">获取最新开奖结果失败: ' + error.message + '</div>';
+            }
+        }
+
+        // 显示最新开奖结果
+        function displayLatestResults(results) {
+            const frontNumbers = results.winning_numbers.front_zone.map(num => 
+                '<div class="number-ball front-number">' + num.toString().padStart(2, '0') + '</div>'
+            ).join('');
+            
+            const backNumbers = results.winning_numbers.back_zone.map(num => 
+                '<div class="number-ball back-number">' + num.toString().padStart(2, '0') + '</div>'
+            ).join('');
+            
+            const regions = results.regional_winners.slice(0, 3).map(region => region.province).join('、');
+            
+            const content = '<div style="text-align: center;"><h4>第' + results.period + '期 (' + results.draw_date + ')</h4><div class="winning-numbers">' + frontNumbers + '<span style="margin: 0 10px; font-size: 1.5em;">+</span>' + backNumbers + '</div><div class="prize-info"><div class="prize-item"><strong>销售总额</strong><br>' + results.total_sales + '</div><div class="prize-item"><strong>奖池金额</strong><br>' + results.jackpot_info.current_pool + '</div><div class="prize-item"><strong>总中奖人数</strong><br>' + results.statistics.total_winners + '注</div><div class="prize-item"><strong>下期开奖</strong><br>' + results.next_draw.date + '</div></div><div style="margin-top: 15px; font-size: 0.9em;"><strong>主要中奖地区:</strong> ' + regions + '</div></div>';
+            
+            document.getElementById('latestResultsContent').innerHTML = content;
+        }
+
+        // 数据分析功能
+        async function performDataAnalysis() {
+            const resultsDiv = document.getElementById('analysisResults');
+            const loadingDiv = document.getElementById('analysisLoading');
+            const contentDiv = document.getElementById('analysisContent');
+            
+            resultsDiv.style.display = 'block';
+            loadingDiv.style.display = 'block';
+            contentDiv.innerHTML = '';
+            
+            try {
+                const response = await fetch(API_BASE + '/api/data_analysis');
+                const data = await response.json();
+                
+                loadingDiv.style.display = 'none';
+                
+                if (data.status === 'success') {
+                    contentDiv.innerHTML = '<div class="success">数据分析完成</div><div class="analysis-results"><div class="analysis-item"><strong>分析期数:</strong> ' + data.analysis.total_draws + '</div><div class="analysis-item"><strong>更新时间:</strong> ' + data.analysis.last_update + '</div><div class="analysis-item"><strong>前区热号:</strong> ' + data.analysis.hot_numbers.front.join(', ') + '</div><div class="analysis-item"><strong>后区热号:</strong> ' + data.analysis.hot_numbers.back.join(', ') + '</div></div>';
+                } else {
+                    throw new Error(data.message || '分析失败');
+                }
+            } catch (error) {
+                loadingDiv.style.display = 'none';
+                contentDiv.innerHTML = '<div class="error">数据分析失败: ' + error.message + '</div>';
+            }
+        }
+
+        // AI预测功能
+        async function generateAIPrediction() {
+            const resultsDiv = document.getElementById('predictionResults');
+            const loadingDiv = document.getElementById('predictionLoading');
+            const contentDiv = document.getElementById('predictionContent');
+            
+            resultsDiv.style.display = 'block';
+            loadingDiv.style.display = 'block';
+            contentDiv.innerHTML = '';
+            
+            try {
+                const response = await fetch(API_BASE + '/api/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({})
+                });
+                const data = await response.json();
+                
+                loadingDiv.style.display = 'none';
+                
+                if (data.status === 'success') {
+                    contentDiv.innerHTML = '<div class="success">AI预测完成</div><div class="analysis-results"><div class="analysis-item"><strong>前区预测:</strong> ' + data.prediction.front_zone.join(', ') + '</div><div class="analysis-item"><strong>后区预测:</strong> ' + data.prediction.back_zone.join(', ') + '</div><div class="analysis-item"><strong>置信度:</strong> ' + (data.prediction.confidence * 100).toFixed(1) + '%</div><div class="analysis-item"><strong>预测时间:</strong> ' + data.timestamp + '</div></div>';
+                } else {
+                    throw new Error(data.message || '预测失败');
+                }
+            } catch (error) {
+                loadingDiv.style.display = 'none';
+                contentDiv.innerHTML = '<div class="error">AI预测失败: ' + error.message + '</div>';
+            }
+        }
+
+        // 灵修因子功能
+        async function getSpiritualFactor() {
+            const resultsDiv = document.getElementById('spiritualResults');
+            const loadingDiv = document.getElementById('spiritualLoading');
+            const contentDiv = document.getElementById('spiritualContent');
+            
+            resultsDiv.style.display = 'block';
+            loadingDiv.style.display = 'block';
+            contentDiv.innerHTML = '';
+            
+            try {
+                const response = await fetch(API_BASE + '/api/spiritual_perturbation');
+                const data = await response.json();
+                
+                loadingDiv.style.display = 'none';
+                
+                if (data.status === 'success') {
+                    contentDiv.innerHTML = '<div class="success">灵修因子获取成功</div><div class="spiritual-factor"><div><strong>混沌因子:</strong> ' + data.perturbation.chaos_factor + '</div><div><strong>和谐因子:</strong> ' + data.perturbation.harmony_factor + '</div><div><strong>宇宙调谐:</strong> ' + data.perturbation.cosmic_alignment + '</div><div><strong>能量等级:</strong> ' + data.perturbation.energy_level + '</div><div><strong>灵修图像:</strong> ' + data.perturbation.spiritual_image + '</div><div><strong>能量签名:</strong> ' + data.perturbation.energy_signature + '</div></div>';
+                } else {
+                    throw new Error(data.message || '获取失败');
+                }
+            } catch (error) {
+                loadingDiv.style.display = 'none';
+                contentDiv.innerHTML = '<div class="error">获取灵修因子失败: ' + error.message + '</div>';
+            }
+        }
+
+        // 健康检查功能
+        async function performHealthCheck() {
+            const resultsDiv = document.getElementById('healthResults');
+            const loadingDiv = document.getElementById('healthLoading');
+            const contentDiv = document.getElementById('healthContent');
+            
+            resultsDiv.style.display = 'block';
+            loadingDiv.style.display = 'block';
+            contentDiv.innerHTML = '';
+            
+            try {
+                const response = await fetch(API_BASE + '/api/health');
+                const data = await response.json();
+                
+                loadingDiv.style.display = 'none';
+                
+                if (data.status === 'healthy') {
+                    contentDiv.innerHTML = '<div class="success">系统检查完成</div><div class="analysis-results"><div class="analysis-item"><strong>系统状态:</strong> ' + data.status + '</div><div class="analysis-item"><strong>服务版本:</strong> ' + data.version + '</div><div class="analysis-item"><strong>检查时间:</strong> ' + data.timestamp + '</div></div>';
+                } else {
+                    throw new Error('系统状态异常');
+                }
+            } catch (error) {
+                loadingDiv.style.display = 'none';
+                contentDiv.innerHTML = '<div class="error">健康检查失败: ' + error.message + '</div>';
+            }
+        }
+
+        // 生成分析报告
+        async function generateReport() {
+            const currentPeriod = document.getElementById('currentPeriod').value || '24001';
+            const lastPeriod = document.getElementById('lastPeriod').value || '23365';
+            
+            const resultsDiv = document.getElementById('reportResults');
+            const loadingDiv = document.getElementById('reportLoading');
+            const contentDiv = document.getElementById('reportContent');
+            
+            resultsDiv.style.display = 'block';
+            loadingDiv.style.display = 'block';
+            contentDiv.style.display = 'none';
+            
+            try {
+                const response = await fetch(API_BASE + '/api/generate-report', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        current_period: currentPeriod,
+                        last_period: lastPeriod
+                    })
+                });
+                const data = await response.json();
+                
+                loadingDiv.style.display = 'none';
+                
+                if (data.status === 'success') {
+                    document.getElementById('markdownContent').textContent = data.report.content;
+                    contentDiv.style.display = 'block';
+                } else {
+                    throw new Error(data.message || '报告生成失败');
+                }
+            } catch (error) {
+                loadingDiv.style.display = 'none';
+                contentDiv.innerHTML = '<div class="error">报告生成失败: ' + error.message + '</div>';
+            }
+        }
+
+        // 复制报告内容
+        function copyReport() {
+            const content = document.getElementById('markdownContent').textContent;
+            navigator.clipboard.writeText(content).then(function() {
+                alert('报告内容已复制到剪贴板！');
+            }).catch(function(err) {
+                console.error('复制失败:', err);
+                alert('复制失败，请手动选择内容复制');
+            });
+        }
+    </script>
 </body>
 </html>
-"@ | Out-File -FilePath "public/index.html" -Encoding UTF8
