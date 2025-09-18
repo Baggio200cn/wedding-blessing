@@ -6,7 +6,7 @@
       "use": "@vercel/static"
     },
     {
-      "src": "api/**/*.py",
+      "src": "api/**/*.py", 
       "use": "@vercel/python"
     }
   ],
@@ -16,7 +16,7 @@
       "dest": "/api/$1"
     },
     {
-      "src": "/(.*)",
+      "src": "/(.*)", 
       "dest": "/public/$1"
     }
   ]
