@@ -2,22 +2,49 @@
   "version": 2,
   "builds": [
     {
-      "src": "public/**",
+      "src": "public/**/*",
       "use": "@vercel/static"
     },
     {
-      "src": "api/**/*.py", 
+      "src": "api/**/*.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
+      "src": "/api/health",
+      "dest": "/api/health.py"
     },
     {
-      "src": "/(.*)", 
+      "src": "/api/predict",
+      "dest": "/api/predict.py"
+    },
+    {
+      "src": "/api/data-analysis",
+      "dest": "/api/data-analysis.py"
+    },
+    {
+      "src": "/api/spiritual",
+      "dest": "/api/spiritual.py"
+    },
+    {
+      "src": "/api/generate-tweet",
+      "dest": "/api/generate-tweet.py"
+    },
+    {
+      "src": "/api/latest-results",
+      "dest": "/api/latest-results.py"
+    },
+    {
+      "src": "/(.*)",
       "dest": "/public/$1"
     }
-  ]
+  ],
+  "functions": {
+    "api/**/*.py": {
+      "runtime": "python3.11",
+      "memory": 512,
+      "maxDuration": 10
+    }
+  }
 }
