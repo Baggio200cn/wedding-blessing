@@ -1,68 +1,53 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "public/**/*",
-      "use": "@vercel/static"
+  "functions": {
+    "api/health.py": {
+      "runtime": "python3.9"
     },
-    {
-      "src": "api/**/*.py",
-      "use": "@vercel/python"
+    "api/predict.py": {
+      "runtime": "python3.9"
+    },
+    "api/data-analysis.py": {
+      "runtime": "python3.9"
+    },
+    "api/spiritual.py": {
+      "runtime": "python3.9"
+    },
+    "api/latest-results.py": {
+      "runtime": "python3.9"
+    },
+    "api/generate-tweet.py": {
+      "runtime": "python3.9"
     }
-  ],
+  },
   "routes": [
     {
       "src": "/api/health",
-      "dest": "/api/health.py",
-      "methods": ["GET", "OPTIONS"]
+      "dest": "/api/health.py"
     },
     {
       "src": "/api/predict",
-      "dest": "/api/predict.py",
-      "methods": ["POST", "OPTIONS"]
+      "dest": "/api/predict.py"
     },
     {
-      "src": "/api/data-analysis",
-      "dest": "/api/data-analysis.py",
-      "methods": ["GET", "OPTIONS"]
+      "src": "/api/data-analysis", 
+      "dest": "/api/data-analysis.py"
     },
     {
       "src": "/api/spiritual",
-      "dest": "/api/spiritual.py",
-      "methods": ["GET", "OPTIONS"]
-    },
-    {
-      "src": "/api/generate-tweet",
-      "dest": "/api/generate-tweet.py",
-      "methods": ["POST", "OPTIONS"]
+      "dest": "/api/spiritual.py"
     },
     {
       "src": "/api/latest-results",
-      "dest": "/api/latest-results.py",
-      "methods": ["GET", "POST", "OPTIONS"]
+      "dest": "/api/latest-results.py"
     },
     {
-      "src": "/css/(.*)",
-      "dest": "/public/css/$1"
-    },
-    {
-      "src": "/js/(.*)",
-      "dest": "/public/js/$1"
-    },
-    {
-      "src": "/favicon.ico",
-      "dest": "/public/favicon.ico"
+      "src": "/api/generate-tweet",
+      "dest": "/api/generate-tweet.py"
     },
     {
       "src": "/(.*)",
-      "dest": "/public/index.html"
+      "dest": "/public/$1"
     }
-  ],
-  "functions": {
-    "api/**/*.py": {
-      "runtime": "python3.11",
-      "memory": 1024,
-      "maxDuration": 30
-    }
-  }
+  ]
 }
