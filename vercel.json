@@ -1,38 +1,95 @@
 {
   "version": 2,
-  "functions": {
-    "api/**/*.py": {
-      "runtime": "python3.9"
+  "builds": [
+    {
+      "src": "public/**/*",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "api/**/*.py",
+      "use": "@vercel/python"
     }
-  },
+  ],
   "routes": [
     {
       "src": "/api/health",
-      "dest": "/api/health.py"
+      "dest": "/api/health.py",
+      "methods": ["GET", "OPTIONS"]
     },
     {
       "src": "/api/predict",
-      "dest": "/api/predict.py"
+      "dest": "/api/predict.py",
+      "methods": ["POST", "OPTIONS"]
     },
     {
       "src": "/api/data-analysis",
-      "dest": "/api/data-analysis.py"
+      "dest": "/api/data-analysis.py",
+      "methods": ["GET", "OPTIONS"]
     },
     {
       "src": "/api/spiritual",
-      "dest": "/api/spiritual.py"
+      "dest": "/api/spiritual.py",
+      "methods": ["GET", "OPTIONS"]
     },
     {
       "src": "/api/generate-tweet",
-      "dest": "/api/generate-tweet.py"
+      "dest": "/api/generate-tweet.py",
+      "methods": ["POST", "OPTIONS"]
     },
     {
       "src": "/api/latest-results",
-      "dest": "/api/latest-results.py"
+      "dest": "/api/latest-results.py",
+      "methods": ["GET", "POST", "OPTIONS"]
+    },
+    {
+      "src": "/favicon.ico",
+      "dest": "/public/favicon.ico"
+    },
+    {
+      "src": "/css/(.*)",
+      "dest": "/public/css/$1"
+    },
+    {
+      "src": "/js/(.*)",
+      "dest": "/public/js/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "/public/$1"
+      "dest": "/public/index.html"
+    }
+  ],
+  "functions": {
+    "api/**/*.py": {
+      "runtime": "python3.11",
+      "memory": 1024,
+      "maxDuration": 30,
+      "environment": {
+        "PYTHONPATH": "/var/task:/var/task/lib",
+        "PYTHONUNBUFFERED": "1"
+      }
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods", 
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization, X-Requested-With"
+        },
+        {
+          "key": "Access-Control-Max-Age",
+          "value": "86400"
+        }
+      ]
     }
   ]
 }
