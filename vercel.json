@@ -1,53 +1,28 @@
 {
   "version": 2,
-  "functions": {
-    "api/health.py": {
-      "runtime": "python3.9"
+  "builds": [
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
     },
-    "api/predict.py": {
-      "runtime": "python3.9"
-    },
-    "api/data-analysis.py": {
-      "runtime": "python3.9"
-    },
-    "api/spiritual.py": {
-      "runtime": "python3.9"
-    },
-    "api/latest-results.py": {
-      "runtime": "python3.9"
-    },
-    "api/generate-tweet.py": {
-      "runtime": "python3.9"
+    {
+      "src": "api/**/*.py",
+      "use": "@vercel/python"
     }
-  },
+  ],
   "routes": [
     {
-      "src": "/api/health",
-      "dest": "/api/health.py"
-    },
-    {
-      "src": "/api/predict",
-      "dest": "/api/predict.py"
-    },
-    {
-      "src": "/api/data-analysis", 
-      "dest": "/api/data-analysis.py"
-    },
-    {
-      "src": "/api/spiritual",
-      "dest": "/api/spiritual.py"
-    },
-    {
-      "src": "/api/latest-results",
-      "dest": "/api/latest-results.py"
-    },
-    {
-      "src": "/api/generate-tweet",
-      "dest": "/api/generate-tweet.py"
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
     },
     {
       "src": "/(.*)",
       "dest": "/public/$1"
     }
-  ]
+  ],
+  "functions": {
+    "api/**/*.py": {
+      "runtime": "python3.9"
+    }
+  }
 }
