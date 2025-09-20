@@ -42,16 +42,16 @@
       "methods": ["GET", "POST", "OPTIONS"]
     },
     {
-      "src": "/favicon.ico",
-      "dest": "/public/favicon.ico"
-    },
-    {
       "src": "/css/(.*)",
       "dest": "/public/css/$1"
     },
     {
       "src": "/js/(.*)",
       "dest": "/public/js/$1"
+    },
+    {
+      "src": "/favicon.ico",
+      "dest": "/public/favicon.ico"
     },
     {
       "src": "/(.*)",
@@ -62,34 +62,7 @@
     "api/**/*.py": {
       "runtime": "python3.11",
       "memory": 1024,
-      "maxDuration": 30,
-      "environment": {
-        "PYTHONPATH": "/var/task:/var/task/lib",
-        "PYTHONUNBUFFERED": "1"
-      }
+      "maxDuration": 30
     }
-  },
-  "headers": [
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        },
-        {
-          "key": "Access-Control-Allow-Methods", 
-          "value": "GET, POST, PUT, DELETE, OPTIONS"
-        },
-        {
-          "key": "Access-Control-Allow-Headers",
-          "value": "Content-Type, Authorization, X-Requested-With"
-        },
-        {
-          "key": "Access-Control-Max-Age",
-          "value": "86400"
-        }
-      ]
-    }
-  ]
+  }
 }
